@@ -21,8 +21,8 @@ Collection-->
     BlockingQueue--> FIFO的队列。对元素的放入提供了额外的put/take/offer(with timeout)/poll(withtimout)的阻塞接口。考虑其使用场景，皆为线程安全。
       ArrayBlockingQueue  基于数组的的阻塞队列，只有一把锁，读写共用。
       DelayQueue          延时执行的队列，只有一把锁，读写共用。比较常见的使用场景是资源超时管理。
-      LinkedBlockingQueue 
-      PriorityBlockingQueue
+      LinkedBlockingQueue 基于链表的阻塞队列，读写各一把锁。
+      PriorityBlockingQueue 出队列顺序不是基于入队列顺序，而是基于优先级。
 
     
       
