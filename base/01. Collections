@@ -1,7 +1,6 @@
-1) collection接口下面有哪些集合，hashmap的实现原理，要把1.7和1.8的区别(红黑树)讲出来，map有哪些实现类以及使用场景，hashmap, hashtable, linkedhashmap,weakHashMap, treemap, concurrentmap，你要是讲的好这里可以说十几分钟，linkedhashmap和treemap排序的区别，concurrenthashmap如何实现线程安全，这里也要把1.7和1.8实现差异说出来(分段加锁和cas技术)，说到这里以后就会问你cas实现原理( CPU Lock前缀指令),它是如何保证其他cpu core的cache失效的，然后会问你volatile的实现原理，要结合java内存模型来讲，可见性是如何实现的(内存屏障)，synchronized锁和reentrantlock的区别以及内部怎么实现的:常用的gc算法及优缺点，如何判断对象的存活性
+1) collection接口下面有哪些集合，hashmap的实现原理，要把1.7和1.8的区别(红黑树)讲出来，map有哪些实现类以及使用场景，hashmap, hashtable, linkedhashmap,weakHashMap, treemap, concurrentmap，你要是讲的好这里可以说十几分钟，linkedhashmap和treemap排序的区别，concurrenthashmap如何实现线程安全，这里也要把1.7和1.8实现差异说出来(分段加锁和cas技术)
 
------------------------
-
+【容器体系】
 Java的容器体系主要以Collection和Map向下延伸
 
 Collection--> 一组对象的集合
@@ -32,3 +31,11 @@ Map --> 区别于Collection，Map是映射的集合
     ConcurrentHashMap   线程同步的HashMap，锁粒度更小。不允许Key/Value为null。
     
     当你通过get(k)获取对应的value时，如果获取到的是null时，你无法判断，它是put（k,v）的时候value为null，还是这个key从来没有做过映射。HashMap是非并发的，可以通过contains(key)来做这个判断。而支持并发的Map在调用m.contains（key）和m.get(key),m可能已经不同了。
+
+【ConcurrentHashMap】
+	线程安全原理：
+		1.7： Segment分段，分段加锁，每个段是一个小HashMap
+		1.8： CASTab + NodeList/TreeBin，外部CAS，内部Synchornize。
+		
+【原子操作】		
+cas实现原理( CPU Lock前缀指令),它是如何保证其他cpu core的cache失效的，然后会问你volatile的实现原理，要结合java内存模型来讲，可见性是如何实现的(内存屏障)，synchronized锁和reentrantlock的区别以及内部怎么实现的:常用的gc算法及优缺点，如何判断对象的存活性		
