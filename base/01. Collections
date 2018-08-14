@@ -37,5 +37,46 @@ Map --> 区别于Collection，Map是映射的集合
 		1.7： Segment分段，分段加锁，每个段是一个小HashMap
 		1.8： CASTab + NodeList/TreeBin，外部CAS，内部Synchornize。
 		
-【原子操作】		
-cas实现原理( CPU Lock前缀指令),它是如何保证其他cpu core的cache失效的，然后会问你volatile的实现原理，要结合java内存模型来讲，可见性是如何实现的(内存屏障)，synchronized锁和reentrantlock的区别以及内部怎么实现的:常用的gc算法及优缺点，如何判断对象的存活性		
+【原子操作多线程】		
+cas实现原理( CPU Lock前缀指令),它是如何保证其他cpu core的cache失效的，然后会问你volatile的实现原理，要结合java内存模型来讲，可见性是如何实现的(内存屏障)，synchronized锁和reentrantlock的区别以及内部怎么实现的:		
+
+Cas：基于CPU底层指令CompareAndSwap
+	汇编中生成Lock前缀指令
+		奔腾4以前的CPU是总线锁
+		奔腾4以后的CPU是缓存锁，粒度被细化。
+		奔腾6以后，可以保证对单个16、32、64字节的写入是原子的。
+	
+	锁定缓存时，数据会被会写到内存中，使得其他CPU的缓存数据失效。
+	
+	禁止读写重排序
+	禁止写缓冲区刷新数据到内存
+	
+	缺点：
+		ABA问题，又改回到A。解决办法：自增时间戳AtomicStampedReference。
+		自旋。
+		一次只能操作一个。
+
+volatile：
+	解决多核缓存不一致问题。窥探技术+MESI协议。
+	可见性：对一个 volatile 变量的读，总是能看到(任意线程)对这个 volatile 变量最后的写入。
+	原子性：对任意单个 volatile 变量的读/写具有原子性
+	happens-before 规则中有这么一条：volatile变量规则：对一个volatile域的写，happens-before于任意后续对这个volatile域的读。
+		volatile写的内存语义：当写一个 volatile 变量时，JVM 会把该线程对应的本地内存中的共享变量值刷新到主内存。
+		volatile读的内存语义：当读一个 volatile 变量时，JVM 会把该线程对应的本地内存置为无效。线程接下来将从主内存中读取共享变量。
+	编译器在生成字节码时，会在指令序列中插入内存屏障来禁止特定类型的处理器重排序。
+	
+	在volatile变量操作的前后，生成如下屏障：
+		在每个volatile写操作的前面插入一个StoreStore屏障。
+		在每个volatile写操作的后面插入一个StoreLoad屏障。
+		在每个volatile读操作的后面插入一个LoadLoad屏障。
+		在每个volatile读操作的后面插入一个LoadStore屏障。
+
+synchronized锁和reentrantlock的区别：
+	ReenTrantLock是自旋锁，可以避免进入内核态。但是锁等待时间长的时候更耗资源。
+	1. ReenTrantLock可以指定是公平锁还是非公平锁。而synchronized只能是非公平锁。所谓的公平锁就是先等待的线程先获得锁。
+	2. ReenTrantLock提供了一个Condition（条件）类，用来实现分组唤醒需要唤醒的线程们，而不是像synchronized要么随机唤醒一个线程要么唤醒全部线程。
+	3. ReenTrantLock提供了一种能够中断等待锁的线程的机制，通过lock.lockInterruptibly()来实现这个机制。
+
+【GC】
+常用的gc算法及优缺点，如何判断对象的存活性	
+	
