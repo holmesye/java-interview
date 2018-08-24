@@ -9,5 +9,11 @@ mysql有哪些索引：
 	底层数据结构：
 		B-树：阶数m的树。Math.ceil(m/2)-1
 			https://www.cnblogs.com/nullzx/p/8729425.html
-	
-	
+		B+树：
+			非叶子节点不存储数据。仅读取索引时更快。
+			查询效率更加确定
+			遍历效率高（相邻节点），整个读取叶子节点所在Page。
+	Hash：希望用比B树更少的查询次数。无法使用Range查询，无法排序、碰撞时性能下降。
+	Fulltext：只支持英文（5.7以后支持中文）基于分词的（所有非字母数字的，都是分词符），可以指定最小分词长度。
+			
+聚集索引： https://blog.csdn.net/oChangWen/article/details/53997366（待读）			
